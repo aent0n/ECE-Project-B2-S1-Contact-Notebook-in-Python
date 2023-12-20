@@ -164,12 +164,18 @@ class CarnetAdressesGUI:
         telephone = self.entry_telephone.get()
 
         if nom:
-            self.cursor.execute('''
-                INSERT INTO contacts (nom, prenom, email, telephone)
-                VALUES (?, ?, ?, ?)
-            ''', (nom, prenom, email, telephone))
-            self.conn.commit()
-            messagebox.showinfo("Succès", "Contact ajouté avec succès.")
+            if telephone and telephone.startswith('0') and telephone.isdigit() and len(telephone) <= 10:
+                if email and '@' in email:
+                    self.cursor.execute('''
+                        INSERT INTO contacts (nom, prenom, email, telephone)
+                        VALUES (?, ?, ?, ?)
+                    ''', (nom, prenom, email, telephone))
+                    self.conn.commit()
+                    messagebox.showinfo("Succès", "Contact ajouté avec succès.")
+                else:
+                    messagebox.showwarning("Erreur", "Veuillez saisir une adresse e-mail valide.")
+            else:
+                messagebox.showwarning("Erreur","Veuillez saisir un numéro de téléphone valide (commençant par '0' et jusqu'à 10 chiffres).")
         else:
             messagebox.showwarning("Erreur", "Veuillez saisir le nom du contact.")
 
